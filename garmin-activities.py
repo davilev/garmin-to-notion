@@ -107,31 +107,35 @@ def format_pace(average_speed):
     else:
         return ""
     
-def activity_exists(client, database_id, activity_date, activity_type, activity_name):
+import time
+from notion_client.errors import HTTPResponseError
 
-    # Check if an activity already exists in the Notion database and return it if found.
-
+def activity_exists(client, database_id, activity_date, activity_type, activity_name, max_retries=3):
     # Handle the activity_type which is now a tuple
     if isinstance(activity_type, tuple):
         main_type, _ = activity_type
     else:
         main_type = activity_type[0] if isinstance(activity_type, (list, tuple)) else activity_type
-    
+
     # Determine the correct activity type for the lookup
     lookup_type = "Stretching" if "stretch" in activity_name.lower() else main_type
-    
-    query = client.databases.query(
-        database_id=database_id,
-        filter={
-            "and": [
-                {"property": "Date", "date": {"equals": activity_date.split('T')[0]}},
-                {"property": "Activity Type", "select": {"equals": lookup_type}},
-                {"property": "Activity Name", "title": {"equals": activity_name}}
-            ]
-        }
-    )
-    results = query['results']
-    return results[0] if results else None
+
+    for attempt in range(max_retries):
+        try:
+            query = client.databases.query(
+                database_id=database_id,
+                filter={
+                    "and": [
+                        {"property": "Date", "date": {"equals": activity_date.split('T')[0]}},
+                        {"property": "Activity Type", "select": {"equals": lookup_type}},
+                        {"property": "Activity Name", "title": {"equals": activity_name}}
+                    ]
+                }
+            )
+            results = query['results']
+            return results[0] if results else None
+        except HTTPResponseError as e:
+
 
 
 def activity_needs_update(existing_activity, new_activity):
