@@ -135,13 +135,40 @@ def activity_exists(client, database_id, activity_date, activity_type, activity_
             results = query['results']
             return results[0] if results else None
 
+import time
+from notion_client.errors import HTTPResponseError
+
+def activity_exists(client, database_id, activity_date, activity_type, activity_name, max_retries=3):
+    # Handle the activity_type which is now a tuple
+    if isinstance(activity_type, tuple):
+        main_type, _ = activity_type
+    else:
+        main_type = activity_type[0] if isinstance(activity_type, (list, tuple)) else activity_type
+
+    # Determine the correct activity type for the lookup
+    lookup_type = "Stretching" if "stretch" in activity_name.lower() else main_type
+
+    for attempt in range(max_retries):
+        try:
+            query = client.databases.query(
+                database_id=database_id,
+                filter={
+                    "and": [
+                        {"property": "Date", "date": {"equals": activity_date.split('T')[0]}},
+                        {"property": "Activity Type", "select": {"equals": lookup_type}},
+                        {"property": "Activity Name", "title": {"equals": activity_name}}
+                    ]
+                }
+            )
+            results = query['results']
+            return results[0] if results else None
+
         except HTTPResponseError as e:
             if e.response.status_code == 502 and attempt < max_retries - 1:
                 print(f"[Warning] 502 from Notion API. Retrying in 5 seconds... (Attempt {attempt + 1})")
                 time.sleep(5)
             else:
                 raise
-
 
 def activity_needs_update(existing_activity, new_activity):
     existing_props = existing_activity['properties']
