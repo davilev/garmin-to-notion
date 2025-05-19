@@ -134,8 +134,13 @@ def activity_exists(client, database_id, activity_date, activity_type, activity_
             )
             results = query['results']
             return results[0] if results else None
-        except HTTPResponseError as e:
 
+        except HTTPResponseError as e:
+            if e.response.status_code == 502 and attempt < max_retries - 1:
+                print(f"[Warning] 502 from Notion API. Retrying in 5 seconds... (Attempt {attempt + 1})")
+                time.sleep(5)
+            else:
+                raise
 
 
 def activity_needs_update(existing_activity, new_activity):
