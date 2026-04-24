@@ -1,10 +1,11 @@
-import os
 from datetime import datetime, UTC, timedelta
 
 import pytz
 from dotenv import load_dotenv
 from garminconnect import Garmin as GarminClient
 from notion_client import Client as NotionClient
+
+from src.helpers import get_garmin_client, get_notion_client
 
 # Your local time zone, replace with the appropriate one if needed
 local_tz = pytz.timezone('America/Toronto')
@@ -290,19 +291,13 @@ def main():
     load_dotenv()
 
     # Initialize Garmin and Notion clients using environment variables
-    garmin_email = os.getenv("GARMIN_EMAIL")
-    garmin_password = os.getenv("GARMIN_PASSWORD")
-    notion_token = os.getenv("NOTION_TOKEN")
-    database_id = os.getenv("NOTION_DB_ID")
-    garmin_fetch_limit = int(os.getenv("GARMIN_ACTIVITIES_FETCH_LIMIT") or "1000")
+    garmin_client, garmin_configuration = get_garmin_client()
+    notion_client, notion_dbs = get_notion_client()
 
-    # Initialize Garmin client and login
-    garmin_client = GarminClient(garmin_email, garmin_password)
-    garmin_client.login()
-    notion_client = NotionClient(auth=notion_token)
+    database_id = notion_dbs.activities
 
     # Get all activities
-    activities = get_all_activities(garmin_client, garmin_fetch_limit)
+    activities = get_all_activities(garmin_client, garmin_configuration.activity_fetch_limit)
 
     # Process all activities
     for activity in activities:
@@ -325,10 +320,10 @@ def main():
         if existing_activity:
             if activity_needs_update(existing_activity, activity):
                 update_activity(notion_client, existing_activity, activity)
-                # print(f"Would update: {activity_type} - {activity_name} - {activity_date}")
+                # print(f"Updated: {activity_type} - {activity_name}")
         else:
             create_activity(notion_client, database_id, activity)
-            # print(f"Would create: {activity_type} - {activity_name} - {activity_date}")
+            # print(f"Created: {activity_type} - {activity_name}")
 
 
 if __name__ == '__main__':
