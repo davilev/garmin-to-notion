@@ -1,6 +1,10 @@
 [![Sync Garmin to Notion](https://github.com/chloevoyer/garmin-to-notion/actions/workflows/sync_garmin_to_notion.yml/badge.svg?branch=main)](https://github.com/chloevoyer/garmin-to-notion/actions/workflows/sync_garmin_to_notion.yml)
 # Garmin to Notion Integration :watch:
+
 This project connects your Garmin activities and personal records to your Notion database, allowing you to keep track of your performance metrics in one place.
+
+> [!IMPORTANT]
+> **Existing users:** Garmin tightened their authentication in March 2025, breaking the previous email/password login flow. You will need to sync your fork with the latest changes and migrate to the new token-based authentication. See [README_AUTH_SETUP.md](README_AUTH_SETUP.md) for instructions. Your `GARMIN_EMAIL` and `GARMIN_PASSWORD` secrets can be removed once done.
 
 ## Features :sparkles:  
   🔄  Automatically sync Garmin activities to Notion in real-time  
