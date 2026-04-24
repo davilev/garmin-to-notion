@@ -29,7 +29,7 @@ def _get_garmin_client() -> Garmin:
     if not garmin_auth_token:
         raise ValueError(
             "GARMIN_AUTH_TOKEN is required. "
-            "See README_2FA.md for instructions on generating a token."
+            "See README_AUTH_SETUP.md for instructions on generating a token."
         )
 
     # GARMIN_AUTH_TOKEN is passed as an inline JSON string (>512 chars), so the
