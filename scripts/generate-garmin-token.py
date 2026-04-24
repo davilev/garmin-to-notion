@@ -13,4 +13,13 @@ client = Garmin(
     prompt_mfa=lambda: input("MFA code: "),
 )
 client.login("~/.garminconnect")
-print(pathlib.Path.home().joinpath(".garminconnect", "garmin_tokens.json").read_text())
+
+token = pathlib.Path.home().joinpath(".garminconnect", "garmin_tokens.json").read_text()
+
+print()
+print("=" * 60)
+print("SUCCESS! Copy everything between the lines below")
+print("(the whole block, starting and ending with curly braces)")
+print("=" * 60)
+print(token)
+print("=" * 60)

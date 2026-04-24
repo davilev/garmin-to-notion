@@ -22,7 +22,8 @@ You will be prompted for:
 2. Your Garmin password (hidden while typing)
 3. Your 2FA code, if applicable (from your authenticator app or SMS)
 
-Once complete, a block of text will be printed in the terminal. **Copy all of it** — that is your token.
+Once complete, the script will print your token between two lines of `=` signs.
+**Copy the entire JSON block** — everything from the opening `{` to the closing `}`, inclusive.
 
 > **Getting a 429 error?** Garmin blocks certain IP ranges (VPNs, corporate networks, some ISPs) on their login
 > endpoint. If this happens, try
