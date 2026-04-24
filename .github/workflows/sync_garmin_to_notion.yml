@@ -5,7 +5,7 @@ on:
     - cron: '0 1 * * *' # Daily
   workflow_dispatch:
     inputs:
-      workoutsToDownload:
+      GARMIN_ACTIVITIES_FETCH_LIMIT:
         type: number
         default: "5"
 env:
