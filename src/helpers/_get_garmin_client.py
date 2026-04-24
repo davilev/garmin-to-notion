@@ -24,28 +24,27 @@ def get_garmin_client() -> tuple[Garmin, GarminConfiguration]:
 
 
 def _get_garmin_client() -> Garmin:
-    # Initialize Garmin and Notion clients using environment variables
-    garmin_email = os.getenv("GARMIN_EMAIL")
-    garmin_password = os.getenv("GARMIN_PASSWORD")
     garmin_auth_token = os.getenv("GARMIN_AUTH_TOKEN")
 
-    has_basic_auth = bool(garmin_email) and bool(garmin_password)
-    has_token_auth = bool(garmin_auth_token)
+    if not garmin_auth_token:
+        raise ValueError(
+            "GARMIN_AUTH_TOKEN is required. "
+            "See README_2FA.md for instructions on generating a token."
+        )
 
-    if not (has_basic_auth or has_token_auth):
-        raise ValueError("Could not find Garmin authentication credentials in environment variables.")
-
-    # Create the client
-    garmin_client = Garmin(garmin_email, garmin_password)
-
-    # Authenticate the client
-    if has_token_auth:
-        print("Using token-based authentication for Garmin Connect.")
-        # Could optionally just use the GARMINTOKENS env variable, but used a dedicated one for clarity and flexibility.
-        garmin_client.login(tokenstore=garmin_auth_token)
-    else:
-        print("Using basic authentication for Garmin Connect.")
-        garmin_client.login()
+    # GARMIN_AUTH_TOKEN is passed as an inline JSON string (>512 chars), so the
+    # library treats it as token data rather than a file path. This means the
+    # access token is refreshed in memory on each run via diauth.garmin.com
+    # (standard OAuth2 refresh — separate from the SSO endpoints that are
+    # rate-limited), but the refreshed token is never written back anywhere.
+    #
+    # This is safe as long as Garmin issues non-rotating refresh tokens, which
+    # is currently the case. If that ever changes and runs start failing with
+    # 401s, we might need to add a workflow step that writes the updated token
+    # back to the GARMIN_AUTH_TOKEN secret after each run via `gh secret set`,
+    # or otherwise persist the token across runs.
+    garmin_client = Garmin()
+    garmin_client.login(tokenstore=garmin_auth_token)
 
     return garmin_client
 
