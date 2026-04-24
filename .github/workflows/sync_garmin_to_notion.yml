@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: '0 1 * * *' # Daily
   workflow_dispatch:
+    inputs:
+      workoutsToDownload:
+        type: number
+        default: "5"
 env:
   TZ: 'America/Montreal'
 
