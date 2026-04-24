@@ -10,27 +10,10 @@ again.
 
 ## Generate the token :computer:
 
-Open a terminal and run the following command (copy the whole thing):
+Open a terminal and run the following command:
 
 ```shell
-uv run --with "garminconnect>=0.3.3" python - <<'EOF'
-import getpass, pathlib, sys
-from garminconnect import Garmin
-
-def prompt(msg):
-    sys.stderr.write(msg)
-    sys.stderr.flush()
-    with open("/dev/tty") as tty:
-        return tty.readline().rstrip("\n")
-
-client = Garmin(
-    prompt("Garmin email: "),
-    getpass.getpass("Garmin password: "),
-    prompt_mfa=lambda: prompt("MFA code: "),
-)
-client.login("~/.garminconnect")
-print(pathlib.Path.home().joinpath(".garminconnect", "garmin_tokens.json").read_text())
-EOF
+uv run https://raw.githubusercontent.com/chloevoyer/garmin-to-notion/main/scripts/generate-garmin-token.py
 ```
 
 You will be prompted for:
