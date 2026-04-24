@@ -293,7 +293,7 @@ def main():
     # Initialize Garmin and Notion clients using environment variables
     garmin_client, garmin_configuration = get_garmin_client()
     notion_client, notion_dbs = get_notion_client()
-    
+
     database_id = notion_dbs.activities
 
     # Get all activities
