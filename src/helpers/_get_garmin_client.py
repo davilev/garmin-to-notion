@@ -51,5 +51,5 @@ def _get_garmin_client() -> Garmin:
 
 def _get_garmin_configuration():
     return GarminConfiguration(
-        activity_fetch_limit=int(os.getenv("GARMIN_ACTIVITIES_FETCH_LIMIT", "1000")),
+        activity_fetch_limit=int(os.getenv("GARMIN_ACTIVITIES_FETCH_LIMIT", "10")),
     )
